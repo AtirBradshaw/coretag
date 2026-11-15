@@ -163,6 +163,11 @@ def test_garbage_input_does_not_crash(client):
     assert client.get(f"/r/{r.json()['id']}").status_code == 200
 
 
+def test_health_reports_database_kind(client):
+    body = client.get("/healthz").json()
+    assert body == {"ok": True, "database": "sqlite"}
+
+
 def test_unknown_report_is_404(client):
     assert client.get("/r/AAAAAA").status_code == 404
     assert client.get("/r/not-a-code").status_code == 404

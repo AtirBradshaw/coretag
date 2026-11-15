@@ -167,7 +167,9 @@ def hardware_history(hardware_id: str):
 
 @app.get("/healthz")
 def health():
-    return {"ok": True}
+    # which kind of database is in use ("postgresql" in production; "sqlite"
+    # there would mean DATABASE_URL is missing and reports won't survive a restart)
+    return {"ok": True, "database": db.engine.dialect.name}
 
 
 # ----------------------------------------------------------------------

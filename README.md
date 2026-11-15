@@ -71,6 +71,8 @@ Then in another window:
 python agent\coretag.py --server http://127.0.0.1:8000
 ```
 
+Without `--server`, the agent uses the live service at https://coretag.onrender.com.
+
 Agent options: `--quick` (no load test), `--minutes N`, `--claim CODE` (buyer checking an
 arrival), `--claim CODE --return` (seller checking a returned item), `--save` (keep the raw data,
 written live during the load test so it survives a crash), `--server URL`.

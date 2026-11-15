@@ -24,7 +24,7 @@ from . import SCHEMA, VERSION, client
 from .collectors import collect_all
 from .collectors.system import collect_system
 
-DEFAULT_SERVER = "http://127.0.0.1:8000"   # changed to the public address once deployed
+DEFAULT_SERVER = "https://coretag.onrender.com"   # override with --server or CORETAG_SERVER
 CLAIM_ALPHABET = set("ACDEFGHJKMNPQRTUVWXY34679")
 
 LINE = "=" * 58
