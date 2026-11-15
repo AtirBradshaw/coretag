@@ -41,6 +41,10 @@ app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
 templates = Jinja2Templates(directory=HERE / "templates")  # autoescapes everything
 templates.env.globals["thermal_trace"] = thermal_trace
 
+# Page sections that are built but switched off for now. Turn one on by
+# setting its environment variable to 1 (in Render: service -> Environment).
+templates.env.globals["show_check_later"] = os.environ.get("CORETAG_SHOW_CHECK_LATER") == "1"
+
 
 @app.middleware("http")
 async def security_headers(request: Request, call_next):

@@ -87,6 +87,25 @@ def test_drive_serial_is_not_shown_on_part_page(client):
     assert "secret-serial-hash" not in page
 
 
+def test_check_later_section_is_hidden_by_default(client):
+    rep = publish(client, telemetry(gpu_component(uuid="GPU-hidden")))
+    page = client.get(f"/r/{rep['id']}").text
+    assert "Checking this item later?" not in page
+
+
+def test_check_later_section_can_be_switched_back_on(client):
+    from server.app.main import templates
+    rep = publish(client, telemetry(gpu_component(uuid="GPU-shown")))
+    templates.env.globals["show_check_later"] = True
+    try:
+        page = client.get(f"/r/{rep['id']}").text
+    finally:
+        templates.env.globals["show_check_later"] = False
+    assert "Checking this item later?" in page
+    assert "A part I sold came back" in page
+    assert rep["id"] in page
+
+
 def test_go_resolves_every_kind_of_code(client):
     a = publish(client, telemetry(gpu_component(uuid="GPU-go", samples=gpu_samples(seed=43))))
     b = publish(client, telemetry(gpu_component(uuid="GPU-go", samples=gpu_samples(seed=44))),

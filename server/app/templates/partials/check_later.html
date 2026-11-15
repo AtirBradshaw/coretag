@@ -1,0 +1,22 @@
+{#
+  "Checking this item later?" - shown on report pages.
+
+  Kept for later: the idea is that every report tells the next person how to
+  compare a fresh run against it, either a buyer checking an item on arrival
+  or a seller checking an item that came back (return fraud). The comparison
+  engine behind it is fully built and tested; only this on-page prompt is
+  switched off for now.
+
+  To show it again, set the environment variable CORETAG_SHOW_CHECK_LATER=1
+  (in Render: the coretag service -> Environment), or change the default in
+  server/app/main.py.
+#}
+<section>
+  <h2>Checking this item later?</h2>
+  <p style="margin:0 0 10px;font-size:14px;max-width:66ch"><strong>Bought it?</strong> When it arrives, run Coretag,
+  choose <em>"I just received this part"</em> and enter code
+  <span class="measured mono" style="font-size:15px;padding:2px 8px;background:var(--tint)">{{ rep.id }}</span>.</p>
+  <p style="margin:0;font-size:14px;max-width:66ch"><strong>Sold it and it came back?</strong> Run Coretag, choose
+  <em>"A part I sold came back"</em> and enter the same code.
+  Either way the server compares the new run with this one and publishes the result: same card, same condition?</p>
+</section>

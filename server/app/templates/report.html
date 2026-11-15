@@ -122,15 +122,8 @@
 </section>
 {% endif %}
 
-<section>
-  <h2>Checking this item later?</h2>
-  <p style="margin:0 0 10px;font-size:14px;max-width:66ch"><strong>Bought it?</strong> When it arrives, run Coretag,
-  choose <em>"I just received this part"</em> and enter code
-  <span class="measured mono" style="font-size:15px;padding:2px 8px;background:var(--tint)">{{ rep.id }}</span>.</p>
-  <p style="margin:0;font-size:14px;max-width:66ch"><strong>Sold it and it came back?</strong> Run Coretag, choose
-  <em>"A part I sold came back"</em> and enter the same code.
-  Either way the server compares the new run with this one and publishes the result: same card, same condition?</p>
-</section>
+{# "Checking this item later?" is saved in partials/check_later.html, switched off for now #}
+{% if show_check_later %}{% include "partials/check_later.html" %}{% endif %}
 
 <section class="scope">
   <h2>Not covered by this report</h2>
