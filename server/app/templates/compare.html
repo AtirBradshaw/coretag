@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Coretag comparison {{ cmp.pair_id }}: {{ res.title }}{% endblock %}
+{% block kicker %}Comparison{% endblock %}
+{% block docmeta %}
+  Comparison <b>{{ cmp.pair_id }}</b><br>
+  {{ labels[0] }} report <a href="/r/{{ seller.id }}"><b>{{ seller.id }}</b></a> · {{ seller.created_at.strftime("%d %b %Y") }}<br>
+  {{ labels[1] }} report <a href="/r/{{ buyer.id }}"><b>{{ buyer.id }}</b></a> · {{ buyer.created_at.strftime("%d %b %Y") }}
+{% endblock %}
+{% block content %}
+<div class="verdict">
+  <p class="eyebrow">{{ labels[2] }}</p>
+  <h1 class="subject">{{ seller.subject }}</h1>
+  <div class="stamp {{ res.verdict }}"><span class="code">{{ res.verdict.replace("_", " ") }}</span>{{ res.title }}</div>
+  <p>{{ res.summary }}</p>
+  {% if res.reason %}<p><strong style="color:var(--ink)">Why:</strong> {{ res.reason }}</p>{% endif %}
+  <div class="tally">
+    {% set h = res.elapsed_hours %}
+    <span>Time between runs: <b>{% if h < 48 %}{{ h|round(1) }} h{% else %}{{ (h / 24)|round(1) }} days{% endif %}</b></span>
+  </div>
+</div>
+
+<section>
+  <h2>Side by side</h2>
+  <table class="cmp">
+    <thead><tr><th>Measurement</th><th>{{ labels[0] }}</th><th>{{ labels[1] }}</th><th>Result</th></tr></thead>
+    <tbody>
+    {% set ns = namespace(group=None) %}
+    {% for r in res.rows %}
+      {% if r.group != ns.group %}{% set ns.group = r.group %}
+      <tr class="group"><td colspan="4">{{ r.group }}</td></tr>{% endif %}
+      <tr class="{{ r.status }}">
+        <td>{{ r.label }}{% if r.note %} <span class="unit mono">({{ r.note }})</span>{% endif %}</td>
+        <td class="v">{{ r.seller if r.seller is not none else "—" }}</td>
+        <td class="v">{{ r.buyer if r.buyer is not none else "—" }}</td>
+        <td class="st">{{ {"same": "same", "changed": "changed", "worse": "worse", "na": "not compared", "better": "better"}[r.status] }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% if res.notes %}
+<section>
+  <h2>Notes</h2>
+  <ul class="notes">{% for n in res.notes %}<li>{{ n }}</li>{% endfor %}</ul>
+</section>
+{% endif %}
+
+<section class="scope">
+  <h2>What this comparison cannot determine</h2>
+  <ul>{% for c in res.cannot_determine %}<li>{{ c }}</li>{% endfor %}</ul>
+</section>
+{% endblock %}

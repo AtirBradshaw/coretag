@@ -1,0 +1,15 @@
+# Render reads this file to know how to run the server.
+# DATABASE_URL is entered by hand in Render's dashboard (it's a secret).
+services:
+  - type: web
+    name: coretag
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server.app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: DATABASE_URL
+        sync: false

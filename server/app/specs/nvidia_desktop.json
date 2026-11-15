@@ -1,0 +1,52 @@
+{
+  "_about": "Reference specs for NVIDIA desktop GeForce cards. tdp_w = reference board power, vram_mb = every factory memory size sold under that name, boost_mhz = reference boost clock. Board partners vary power limits, so TDP mismatches are informational only. Laptop GPUs are deliberately NOT in this table: they share names with desktop cards but have different memory sizes and power limits.",
+  "cards": {
+    "rtx 5090":          {"tdp_w": 575, "vram_mb": [32768],        "boost_mhz": 2407},
+    "rtx 5080":          {"tdp_w": 360, "vram_mb": [16384],        "boost_mhz": 2617},
+    "rtx 5070 ti":       {"tdp_w": 300, "vram_mb": [16384],        "boost_mhz": 2452},
+    "rtx 5070":          {"tdp_w": 250, "vram_mb": [12288],        "boost_mhz": 2512},
+    "rtx 5060 ti":       {"tdp_w": 180, "vram_mb": [8192, 16384],  "boost_mhz": 2572},
+    "rtx 5060":          {"tdp_w": 145, "vram_mb": [8192],         "boost_mhz": 2497},
+
+    "rtx 4090":          {"tdp_w": 450, "vram_mb": [24576],        "boost_mhz": 2520},
+    "rtx 4080 super":    {"tdp_w": 320, "vram_mb": [16384],        "boost_mhz": 2550},
+    "rtx 4080":          {"tdp_w": 320, "vram_mb": [16384],        "boost_mhz": 2505},
+    "rtx 4070 ti super": {"tdp_w": 285, "vram_mb": [16384],        "boost_mhz": 2610},
+    "rtx 4070 ti":       {"tdp_w": 285, "vram_mb": [12288],        "boost_mhz": 2610},
+    "rtx 4070 super":    {"tdp_w": 220, "vram_mb": [12288],        "boost_mhz": 2475},
+    "rtx 4070":          {"tdp_w": 200, "vram_mb": [12288],        "boost_mhz": 2475},
+    "rtx 4060 ti":       {"tdp_w": 160, "vram_mb": [8192, 16384],  "boost_mhz": 2535},
+    "rtx 4060":          {"tdp_w": 115, "vram_mb": [8192],         "boost_mhz": 2460},
+
+    "rtx 3090 ti":       {"tdp_w": 450, "vram_mb": [24576],        "boost_mhz": 1860},
+    "rtx 3090":          {"tdp_w": 350, "vram_mb": [24576],        "boost_mhz": 1695},
+    "rtx 3080 ti":       {"tdp_w": 350, "vram_mb": [12288],        "boost_mhz": 1665},
+    "rtx 3080":          {"tdp_w": 320, "vram_mb": [10240, 12288], "boost_mhz": 1710},
+    "rtx 3070 ti":       {"tdp_w": 290, "vram_mb": [8192],         "boost_mhz": 1770},
+    "rtx 3070":          {"tdp_w": 220, "vram_mb": [8192],         "boost_mhz": 1725},
+    "rtx 3060 ti":       {"tdp_w": 200, "vram_mb": [8192],         "boost_mhz": 1665},
+    "rtx 3060":          {"tdp_w": 170, "vram_mb": [8192, 12288],  "boost_mhz": 1777},
+    "rtx 3050":          {"tdp_w": 130, "vram_mb": [8192],         "boost_mhz": 1777},
+
+    "rtx 2080 ti":       {"tdp_w": 250, "vram_mb": [11264],        "boost_mhz": 1545},
+    "rtx 2080 super":    {"tdp_w": 250, "vram_mb": [8192],         "boost_mhz": 1815},
+    "rtx 2080":          {"tdp_w": 215, "vram_mb": [8192],         "boost_mhz": 1710},
+    "rtx 2070 super":    {"tdp_w": 215, "vram_mb": [8192],         "boost_mhz": 1770},
+    "rtx 2070":          {"tdp_w": 175, "vram_mb": [8192],         "boost_mhz": 1620},
+    "rtx 2060 super":    {"tdp_w": 175, "vram_mb": [8192],         "boost_mhz": 1650},
+    "rtx 2060":          {"tdp_w": 160, "vram_mb": [6144, 12288],  "boost_mhz": 1680},
+
+    "gtx 1660 ti":       {"tdp_w": 120, "vram_mb": [6144],         "boost_mhz": 1770},
+    "gtx 1660 super":    {"tdp_w": 125, "vram_mb": [6144],         "boost_mhz": 1785},
+    "gtx 1660":          {"tdp_w": 120, "vram_mb": [6144],         "boost_mhz": 1785},
+    "gtx 1650 super":    {"tdp_w": 100, "vram_mb": [4096],         "boost_mhz": 1725},
+    "gtx 1650":          {"tdp_w": 75,  "vram_mb": [4096],         "boost_mhz": 1665},
+
+    "gtx 1080 ti":       {"tdp_w": 250, "vram_mb": [11264],        "boost_mhz": 1582},
+    "gtx 1080":          {"tdp_w": 180, "vram_mb": [8192],         "boost_mhz": 1733},
+    "gtx 1070 ti":       {"tdp_w": 180, "vram_mb": [8192],         "boost_mhz": 1683},
+    "gtx 1070":          {"tdp_w": 150, "vram_mb": [8192],         "boost_mhz": 1683},
+    "gtx 1060":          {"tdp_w": 120, "vram_mb": [3072, 6144],   "boost_mhz": 1708},
+    "gtx 1050 ti":       {"tdp_w": 75,  "vram_mb": [4096],         "boost_mhz": 1392}
+  }
+}

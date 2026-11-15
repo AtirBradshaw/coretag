@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Coretag part {{ part.code }}: {{ label }} history{% endblock %}
+{% block description %}Every Coretag report filed for this {{ label }}.{% endblock %}
+{% block kicker %}Part History{% endblock %}
+{% block docmeta %}
+  Part <b>{{ part.code }}</b><br>
+  First seen <b>{{ part.first_seen.strftime("%d %b %Y") }}</b><br>
+  Reports on file <b>{{ rows|length }}</b>
+{% endblock %}
+{% block content %}
+<div class="verdict">
+  <p class="eyebrow">History of one physical {{ "graphics card" if part.kind == "gpu" else "drive" if part.kind == "drive" else "part" }}</p>
+  <h1 class="subject">{{ label }}</h1>
+  <p>Every Coretag report ever filed for this exact {{ "card" if part.kind == "gpu" else "part" }}, oldest first.
+     It's identified by the ID built into it at the factory, not by a sticker or a listing, so
+     a different {{ "card" if part.kind == "gpu" else "part" }} can never appear on this page.</p>
+  <p class="mono" style="font-size:12px;overflow-wrap:anywhere">Hardware ID: {{ part.hardware_id.split(":", 1)[1] if part.kind == "gpu" else "(drive serial, kept private)" }}</p>
+</div>
+
+{% if names|length > 1 %}
+<section class="integrity">
+  <h2>Identity warning</h2>
+  <ul class="findings">
+    <li class="finding flagged">
+      <span class="mark" aria-hidden="true"></span>
+      <div><h4>Reported under more than one model name</h4>
+        <p>This hardware ID has appeared as: {{ names|join(", ") }}. A part can't change model, which
+           points to modified firmware or forged data in at least one report.</p></div>
+      <span class="sev">check</span>
+    </li>
+  </ul>
+</section>
+{% endif %}
+
+<section>
+  <h2>Reports</h2>
+  <table class="cmp">
+    <thead><tr><th>Date</th><th>Report</th><th>Result</th><th>Key readings</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      {% set s = r.snapshot %}
+      <tr class="{{ 'same' if r.verdict == 'pass' else 'changed' if r.verdict == 'fail' else 'na' }}">
+        <td class="v">{{ r.created_at.strftime("%d %b %Y") }}</td>
+        <td class="v"><a href="/r/{{ r.report_id }}">{{ r.report_id }}</a></td>
+        <td class="st">{{ {"pass": "nothing flagged", "caution": "review", "fail": "failing"}[r.verdict] }}</td>
+        <td style="font-size:13px">
+          {% if part.kind == "gpu" %}
+            {% if s.peak_temp_c is number %}{{ s.peak_temp_c }} °C peak under load{% if not s.load_conclusive %} (light load){% endif %}{% else %}no load test{% endif %}
+            {% if s.vbios %}· VBIOS <span class="mono">{{ s.vbios }}</span>{% endif %}
+          {% elif part.kind == "drive" %}
+            {% if s.power_on_hours is number %}{{ "{:,}".format(s.power_on_hours) }} h{% endif %}
+            {% if s.data_written_tb is number %}· {{ s.data_written_tb }} TB written{% endif %}
+            {% if s.reallocated_sectors %}· {{ s.reallocated_sectors }} reallocated{% endif %}
+          {% endif %}
+          {% if names|length > 1 %}<br><span class="unit">as {{ r.label }}</span>{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% if comparisons %}
+<section>
+  <h2>Comparisons</h2>
+  <ul class="plain">
+  {% for c in comparisons %}
+    <li><a class="mono" href="/c/{{ c.pair_id }}">{{ c.pair_id }}</a>
+        <span>{{ c.verdict.replace("_", " ").title() }}</span>
+        <span style="color:var(--muted)">{{ c.created_at.strftime("%d %b %Y") }} ·
+          {{ "return check" if c.mode == "return" else "buyer's check on arrival" }}
+          ({{ c.seller_report_id }} → {{ c.buyer_report_id }})</span></li>
+  {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="scope">
+  <h2>What this history can't show</h2>
+  <ul>
+    <li>Use between reports (mining, gaming, storage)</li>
+    <li>Repairs, re-pastes or physical damage</li>
+    <li>Who owned it, or who ran each test</li>
+    <li>Reports from before Coretag existed</li>
+  </ul>
+</section>
+{% endblock %}

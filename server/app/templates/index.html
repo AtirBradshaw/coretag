@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Coretag: measured health reports for used PC parts{% endblock %}
+{% block kicker %}Used hardware, measured{% endblock %}
+{% block content %}
+<div class="hero">
+  <h1>Don't trust a screenshot. Read the card.</h1>
+  <p>Coretag reads a graphics card's own sensors and firmware, puts it under five minutes of load, and
+     publishes the measurements at a permanent link sellers can paste into any listing.</p>
+</div>
+
+<section>
+  <h2>Have a Coretag code?</h2>
+  <form class="lookup" onsubmit="var v=this.code.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');if(v){location.href='/go/'+v;}return false;">
+    <input name="code" maxlength="8" placeholder="A4F9KC" aria-label="Coretag code" autocomplete="off">
+    <button type="submit">Open</button>
+  </form>
+  <p style="margin:10px 0 0;color:var(--muted);font-size:13px">Works for report, comparison and part codes.</p>
+</section>
+
+<section>
+  <h2>How it works</h2>
+  <div class="steps">
+    <div class="step"><b>01 · SELLER</b><h3>Test before listing</h3>
+      <p>Run Coretag. It loads the card, records temperature, clocks and power, and the server scores the raw data.</p></div>
+    <div class="step"><b>02 · LISTING</b><h3>Share the link</h3>
+      <p>Paste the report link into eBay, r/hardwareswap, Marketplace or anywhere else. Include the code with the item.</p></div>
+    <div class="step"><b>03 · BUYER</b><h3>Test on arrival</h3>
+      <p>Run Coretag with the seller's code. The server compares both runs: same card? Same condition?</p></div>
+  </div>
+</section>
+
+<section class="scope">
+  <h2>What Coretag can't see</h2>
+  <ul>
+    <li>Physical or cosmetic damage</li><li>Bent pins, corrosion, cracked PCBs</li>
+    <li>Power supply health</li><li>Coil whine</li><li>Remaining lifespan</li>
+  </ul>
+</section>
+{% endblock %}

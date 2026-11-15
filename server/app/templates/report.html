@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Coretag {{ rep.id }}: {{ res.subject }}{% endblock %}
+{% block description %}{{ res.subject }}: {{ title_text }}. Measured {{ rep.created_at.strftime("%d %b %Y") }}.{% endblock %}
+{% block docmeta %}
+  Report <b>{{ rep.id }}</b><br>
+  Issued <b>{{ rep.created_at.strftime("%d %b %Y · %H:%M") }} UTC</b><br>
+  Agent <b>v{{ res.agent_version or "?" }}</b>
+{% endblock %}
+{% block content %}
+
+<div class="verdict">
+  <p class="eyebrow">Subject of report</p>
+  <h1 class="subject">{{ res.subject }}</h1>
+  <div class="stamp {{ res.verdict }}"><span class="code">{{ res.verdict }}</span>{{ title_text }}</div>
+  <p>{{ sub_text }}</p>
+  <div class="tally">
+    <span class="f"><b>{{ counts.fail }}</b>failing</span>
+    <span class="c"><b>{{ counts.caution }}</b>flagged</span>
+    <span class="p"><b>{{ counts.pass }}</b>normal</span>
+    {% if res.flags %}<span class="c"><b>{{ res.flags|length }}</b>data-integrity {{ "concern" if res.flags|length == 1 else "concerns" }}</span>{% endif %}
+  </div>
+</div>
+
+{% if res.flags %}
+<section class="integrity">
+  <h2>Data integrity</h2>
+  <p style="margin:0 0 12px;color:var(--muted);font-size:13.5px;max-width:66ch">
+    The server checks whether the measurements look like they came from real hardware.
+    These did not pass every check. Treat this report with caution.</p>
+  <ul class="findings">
+  {% for f in res.flags %}
+    <li class="finding flagged">
+      <span class="mark" aria-hidden="true"></span>
+      <div><h4>{{ f.title }}</h4><p>{{ f.detail }}</p></div>
+      <span class="sev">check</span>
+    </li>
+  {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% for comp in res.components if comp.kind == "gpu" and comp.trace %}
+<figure class="trace">
+  <figcaption>
+    <span class="trace-title">{{ comp.label }}: sustained load</span>
+    <span class="legend"><i class="k-temp"></i>temperature <i class="k-clock"></i>core clock <i class="k-band"></i>throttling</span>
+  </figcaption>
+  {{ thermal_trace(comp.trace)|safe }}
+</figure>
+{% endfor %}
+
+<section>
+  <h2>Findings</h2>
+  <ul class="findings">
+  {% for f in res.findings %}
+    <li class="finding {{ f.severity }}">
+      <span class="mark" aria-hidden="true"></span>
+      <div>
+        <h4>{{ f.title }}{% if f.measured %} <span class="measured">{{ f.measured }}</span>{% endif %}</h4>
+        <p>{{ f.detail }}</p>
+        {% if res.components|length > 1 and f.component %}<span class="who">{{ f.component }}</span>{% endif %}
+      </div>
+      <span class="sev">{{ f.severity }}</span>
+    </li>
+  {% endfor %}
+  </ul>
+</section>
+
+{% set gpus = res.components | selectattr("kind", "equalto", "gpu") | list %}
+{% if gpus %}
+<section>
+  <h2>Graphics processor</h2>
+  {% for comp in gpus %}
+  <div class="component">
+    {% if gpus|length > 1 %}<h3>{{ comp.label }}</h3>{% endif %}
+    <dl class="fields">
+      {% for x in comp.facts %}<div class="field"><dt>{{ x.label }}</dt><dd>{{ x.value or "—" }}<span class="unit">{{ x.unit }}</span></dd></div>{% endfor %}
+    </dl>
+    {% if comp.load_facts %}
+    <p class="subhead">Measured under sustained load</p>
+    <dl class="fields">
+      {% for x in comp.load_facts %}<div class="field"><dt>{{ x.label }}</dt><dd>{{ x.value if x.value is not none else "—" }}<span class="unit">{{ x.unit }}</span></dd></div>{% endfor %}
+    </dl>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+{% set drives = res.components | selectattr("kind", "equalto", "drive") | list %}
+{% if drives %}
+<section>
+  <h2>Storage</h2>
+  {% for comp in drives %}
+  <div class="component">
+    <h3>{{ comp.label }}</h3>
+    <dl class="fields">
+      {% for x in comp.facts[1:] %}<div class="field"><dt>{{ x.label }}</dt><dd>{{ x.value if x.value is not none else "—" }}<span class="unit">{{ x.unit }}</span></dd></div>{% endfor %}
+    </dl>
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+{% if part_links or comparisons %}
+<section>
+  <h2>History</h2>
+  <ul class="plain">
+  {% for p in part_links %}
+    <li><a class="mono" href="/p/{{ p.code }}">Part {{ p.code }}</a>
+        <span>{{ p.label }}</span>
+        <span style="color:var(--muted)">{{ p.count }} {{ "report" if p.count == 1 else "reports" }} on file for this exact {{ "card" if p.kind == "gpu" else "part" }}</span></li>
+  {% endfor %}
+  {% for c in comparisons %}
+    <li><a class="mono" href="/c/{{ c.pair_id }}">Comparison {{ c.pair_id }}</a>
+        <span>{{ c.verdict.replace("_", " ").title() }}</span>
+        <span style="color:var(--muted)">{{ c.created_at.strftime("%d %b %Y") }} ·
+          {{ "return check" if c.mode == "return" else "buyer's check on arrival" }} ·
+          {{ "this was the earlier run" if c.seller_report_id == rep.id else "this was the later run" }}</span></li>
+  {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section>
+  <h2>Checking this item later?</h2>
+  <p style="margin:0 0 10px;font-size:14px;max-width:66ch"><strong>Bought it?</strong> When it arrives, run Coretag,
+  choose <em>"I just received this part"</em> and enter code
+  <span class="measured mono" style="font-size:15px;padding:2px 8px;background:var(--tint)">{{ rep.id }}</span>.</p>
+  <p style="margin:0;font-size:14px;max-width:66ch"><strong>Sold it and it came back?</strong> Run Coretag, choose
+  <em>"A part I sold came back"</em> and enter the same code.
+  Either way the server compares the new run with this one and publishes the result: same card, same condition?</p>
+</section>
+
+<section class="scope">
+  <h2>Not covered by this report</h2>
+  <ul>
+    <li>Physical condition and cosmetic damage</li>
+    <li>Bent pins, corrosion or PCB cracks</li>
+    <li>Power supply health</li>
+    <li>Coil whine and fan noise</li>
+    <li>Remaining service life</li>
+    <li>Mining or usage history before this test</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Audit</h2>
+  <p style="margin:0;font-size:13px;color:var(--muted)">
+    The raw data behind this report is public: <a class="mono" href="/api/v1/report/{{ rep.id }}">/api/v1/report/{{ rep.id }}</a>.
+    {% if res.system.os %}Tested on {{ res.system.os }} {{ res.system.os_version or "" }}{% if res.system.cpu %}, {{ res.system.cpu }}{% endif %}.{% endif %}
+  </p>
+</section>
+{% endblock %}

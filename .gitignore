@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# local databases and run output, never published
+*.db
+*.db-journal
+coretag_run_*.json
+coretag_live_*.jsonl
+
+# secrets
+.env
+
+# editor / assistant settings
+.claude/
+.vscode/

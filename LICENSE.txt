@@ -1,0 +1,23 @@
+Coretag Source-Available License
+Copyright (c) 2026 the Coretag author. All rights reserved.
+
+DRAFT: replace with your own licence text, or have it reviewed, before relying on it.
+
+1. Permission to read. You may view, read and study this source code, and run it on
+   your own computers to inspect, test or audit how it works, and to produce Coretag
+   reports through the official Coretag service.
+
+2. No other rights. You may not copy, modify, merge, publish, distribute, sublicense,
+   sell, host as a service, or create derivative works from this code or any part of it,
+   in source or compiled form, without prior written permission from the copyright holder.
+
+3. Contributions. If you submit suggestions or changes, you grant the copyright holder a
+   perpetual, irrevocable, worldwide, royalty-free licence to use them for any purpose.
+
+4. No warranty. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+   AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+   CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+   OR ITS USE. Coretag reports are records of measurements, not certifications or warranties.
+
+5. Termination. Any use outside these terms ends your permission automatically.
