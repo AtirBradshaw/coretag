@@ -15,6 +15,7 @@ Options for testing / advanced use:
 import argparse
 import json
 import os
+import re
 import sys
 import time
 import webbrowser
@@ -25,7 +26,7 @@ from .collectors import collect_all
 from .collectors.system import collect_system
 
 DEFAULT_SERVER = "https://coretag.onrender.com"   # override with --server or CORETAG_SERVER
-CLAIM_ALPHABET = set("ACDEFGHJKMNPQRTUVWXY34679")
+CODE_SHAPE = re.compile(r"[A-Za-z0-9][A-Za-z0-9 _\-]{4,38}[A-Za-z0-9]")
 
 LINE = "=" * 58
 
@@ -42,8 +43,11 @@ def ask(prompt):
 
 
 def normalize_code(code):
-    c = (code or "").strip().upper().replace("-", "").replace(" ", "")
-    return c if len(c) == 6 and set(c) <= CLAIM_ALPHABET else None
+    """A light shape check only. Codes are two words like `amber-otter` (or
+    six characters for older reports); the SERVER decides whether a code is
+    real, so new words never need a new version of the agent."""
+    c = (code or "").strip()
+    return c if CODE_SHAPE.fullmatch(c) else None
 
 
 def guided_intro():
@@ -71,15 +75,15 @@ def guided_intro():
 def ask_claim_code(server, mode):
     say()
     if mode == "return":
-        say("  Enter the 6-character code of the report you made")
-        say("  BEFORE you shipped this item.")
+        say("  Enter the code of the report you made BEFORE you shipped")
+        say("  this item. It's two words, like amber-otter.")
     else:
-        say("  Enter the 6-character code from the seller's report")
-        say("  (it's on the report page, and should have come with the item).")
+        say("  Enter the code from the seller's report. It's two words,")
+        say("  like amber-otter, and is on the report page.")
     while True:
         code = normalize_code(ask("  Code: "))
         if not code:
-            say("  That doesn't look like a Coretag code (6 letters/numbers).")
+            say("  That doesn't look like a Coretag code (two words, like amber-otter).")
             continue
         try:
             info = client.check_claim(server, code)
@@ -87,6 +91,7 @@ def ask_claim_code(server, mode):
             say(f"  Couldn't check the code: {e}")
             return None
         if info.get("valid"):
+            code = info.get("report_id") or code      # the server's exact spelling
             say(f"  Found: {info.get('subject')} (report {code})")
             return code
         say("  No report with that code. Check it and try again.")
@@ -118,7 +123,7 @@ def main(argv=None):
     server = args.server
     claim = normalize_code(args.claim) if args.claim else None
     if args.claim and not claim:
-        say("That claim code isn't valid (6 letters/numbers).")
+        say("That claim code doesn't look right (two words, like amber-otter).")
         return 2
 
     mode = "return" if args.is_return else "arrival"
