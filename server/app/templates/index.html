@@ -10,8 +10,9 @@
 
 <section>
   <h2>Have a Coretag code?</h2>
-  <form class="lookup" onsubmit="var v=this.code.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');if(v){location.href='/go/'+v;}return false;">
-    <input name="code" maxlength="8" placeholder="A4F9KC" aria-label="Coretag code" autocomplete="off">
+  <form class="lookup" onsubmit="var v=this.code.value.trim();if(v){location.href='/go/'+encodeURIComponent(v);}return false;">
+    <input name="code" maxlength="40" placeholder="amber-otter" aria-label="Coretag code"
+           autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
     <button type="submit">Open</button>
   </form>
   <p style="margin:10px 0 0;color:var(--muted);font-size:13px">Works for report, comparison and part codes.</p>

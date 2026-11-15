@@ -138,8 +138,8 @@ ul.findings{list-style:none;margin:0;padding:0}
 .step h3{margin-top:4px}
 .step p{margin:0;color:var(--muted);font-size:14px}
 .lookup{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-.lookup input{font-family:"IBM Plex Mono",monospace;font-size:18px;letter-spacing:.2em;text-transform:uppercase;
-  padding:10px 12px;border:1.5px solid var(--rule);width:11ch;background:#fff;color:var(--ink)}
+.lookup input{font-family:"IBM Plex Mono",monospace;font-size:18px;
+  padding:10px 12px;border:1.5px solid var(--rule);width:min(100%,20ch);background:#fff;color:var(--ink)}
 .lookup button{font-family:Archivo,sans-serif;font-weight:600;font-size:15px;padding:10px 18px;
   border:0;background:var(--ink);color:#fff;cursor:pointer}
 

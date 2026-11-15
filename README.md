@@ -16,9 +16,15 @@ with their own pre-shipping code and learns whether the card they got back is th
 | Code | Example | Identifies | Where it comes from |
 |---|---|---|---|
 | Hardware ID | `GPU-786b253b-…` | one physical part | built in at the factory (NVIDIA UUID, drive serial); Coretag reads it, never assigns it |
-| Part code | `/p/K7MQ3D` | that part's public history page | assigned the first time Coretag sees the hardware ID, and only ever looked up *by* it |
-| Report code | `/r/3YTFF6` | one test run | issued by the server per run; also the claim code a buyer or returning seller enters |
-| Comparison code | `/c/9HXT4A` | one earlier-vs-later pairing | issued when a claim is made |
+| Part code | `/p/mossy-heron` | that part's public history page | assigned the first time Coretag sees the hardware ID, and only ever looked up *by* it |
+| Report code | `/r/amber-otter` | one test run | issued by the server per run; also the claim code a buyer or returning seller enters |
+| Comparison code | `/c/jolly-comet` | one earlier-vs-later pairing | issued when a claim is made |
+
+Codes are an adjective plus a noun from the curated lists in `server/app/words.py`
+(nothing explicit, negative, or that could read as a verdict on the hardware). They're unique
+across all three kinds, so the one lookup box always knows which a code is. If the two-word space
+gets crowded, new codes automatically gain a number (`amber-otter-42`). Older six-character
+codes like `U9PNUK` keep working. Capitals, spaces and dashes don't matter when typing a code.
 
 Drive serial numbers are stored only as a one-way fingerprint and never shown.
 

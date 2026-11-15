@@ -17,6 +17,7 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import (Column, DateTime, Integer, MetaData, String, Table,
                         Text, create_engine, insert, select, update)
+from sqlalchemy import text as sql
 from sqlalchemy.exc import IntegrityError
 from . import ids
 
@@ -31,7 +32,7 @@ sessions = Table(
 
 reports = Table(
     "reports", metadata,
-    Column("id", String(12), primary_key=True),
+    Column("id", String(32), primary_key=True),
     Column("created_at", DateTime, nullable=False, index=True),
     Column("session_issued_at", DateTime, nullable=False),
     Column("agent_version", String(32)),
@@ -48,7 +49,7 @@ hardware = Table(
     "hardware", metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("hardware_id", String(160), nullable=False, index=True),
-    Column("report_id", String(12), nullable=False, index=True),
+    Column("report_id", String(32), nullable=False, index=True),
     Column("kind", String(16), nullable=False),
     Column("label", String(200)),
     Column("created_at", DateTime, nullable=False),
@@ -60,7 +61,7 @@ hardware = Table(
 # BY the factory ID, so it can't be moved to a different card.
 parts = Table(
     "parts", metadata,
-    Column("code", String(12), primary_key=True),
+    Column("code", String(32), primary_key=True),
     Column("hardware_id", String(160), nullable=False, unique=True),
     Column("kind", String(16), nullable=False),
     Column("first_seen", DateTime, nullable=False),
@@ -68,9 +69,9 @@ parts = Table(
 
 comparisons = Table(
     "comparisons", metadata,
-    Column("pair_id", String(12), primary_key=True),
-    Column("seller_report_id", String(12), nullable=False, index=True),
-    Column("buyer_report_id", String(12), nullable=False, index=True),
+    Column("pair_id", String(32), primary_key=True),
+    Column("seller_report_id", String(32), nullable=False, index=True),
+    Column("buyer_report_id", String(32), nullable=False, index=True),
     Column("verdict", String(24), nullable=False),
     Column("result", Text, nullable=False),
     Column("created_at", DateTime, nullable=False),
@@ -98,7 +99,32 @@ def init(url: str | None = None):
         kwargs["connect_args"] = {"check_same_thread": False}
     engine = create_engine(url, **kwargs)
     metadata.create_all(engine)
+    _upgrade(engine)
     return engine
+
+
+# Columns that hold a Coretag code. The first live tables were created when
+# codes were 6 characters (VARCHAR(12)); word codes like "lavender-butterfly"
+# need more room. create_all() never changes existing tables, so widen them
+# here. Safe to run on every start: it only acts on columns still too narrow.
+# (SQLite ignores VARCHAR lengths, so this only matters on Postgres.)
+CODE_COLUMNS = [("reports", "id"), ("hardware", "report_id"),
+                ("parts", "code"), ("comparisons", "pair_id"),
+                ("comparisons", "seller_report_id"),
+                ("comparisons", "buyer_report_id")]
+
+
+def _upgrade(eng):
+    if eng.dialect.name != "postgresql":
+        return
+    with eng.begin() as c:
+        for table, column in CODE_COLUMNS:
+            size = c.execute(sql(
+                "SELECT character_maximum_length FROM information_schema.columns "
+                "WHERE table_name = :t AND column_name = :c"),
+                {"t": table, "c": column}).scalar()
+            if size is not None and size < 32:
+                c.execute(sql(f'ALTER TABLE "{table}" ALTER COLUMN "{column}" TYPE VARCHAR(32)'))
 
 
 def utcnow() -> datetime:
@@ -143,16 +169,26 @@ def consume_nonce(nonce: str, ttl: timedelta) -> datetime | None:
 # reports
 # ----------------------------------------------------------------------
 
+def _code_taken(conn, code: str) -> bool:
+    """Codes are unique across reports, comparisons AND parts, so the one
+    lookup box can always tell which a code belongs to."""
+    for col in (reports.c.id, comparisons.c.pair_id, parts.c.code):
+        if conn.execute(select(col).where(col == code)).first() is not None:
+            return True
+    return False
+
+
 def _insert_with_fresh_id(conn, table, id_col, values):
-    """Pick a random short ID that isn't taken yet. (The primary key would
-    still reject a duplicate if two uploads raced for the same one.)"""
-    col = table.c[id_col]
-    for _ in range(8):
-        new = ids.new_id()
-        if conn.execute(select(col).where(col == new)).first() is None:
+    """Pick a random code that isn't taken yet. Two words first; if those
+    keep colliding (the space is getting crowded), add a number, then a
+    longer one, so a code can always be issued. (The primary key would still
+    reject a duplicate if two uploads raced for the same one.)"""
+    for digits in (0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4):
+        new = ids.new_id(digits)
+        if not _code_taken(conn, new):
             conn.execute(insert(table).values(**{id_col: new}, **values))
             return new
-    raise RuntimeError("could not allocate an id")
+    raise RuntimeError("could not allocate a code")
 
 
 def store_report(*, telemetry: dict, result: dict, session_issued_at: datetime) -> tuple[str, datetime]:
