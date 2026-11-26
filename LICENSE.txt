@@ -1,7 +1,6 @@
 Coretag Source-Available License
-Copyright (c) 2026 the Coretag author. All rights reserved.
+Copyright (c) 2026 Atir Bradshaw. All rights reserved.
 
-DRAFT: replace with your own licence text, or have it reviewed, before relying on it.
 
 1. Permission to read. You may view, read and study this source code, and run it on
    your own computers to inspect, test or audit how it works, and to produce Coretag
