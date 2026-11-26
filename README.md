@@ -40,7 +40,7 @@ Drive serial numbers are stored only as a one-way fingerprint and never shown.
  2. read sensors + 5-min load test
  3. send RAW readings + code  ─────────────▶ check code, compute every statistic itself,
                                               run integrity checks, score, store
- 4. show link                 ◀───────────── /r/A4F9KC
+ 4. show link                 ◀───────────── /r/amber-otter
 ```
 
 The agent never computes a score. A verdict calculated on the seller's machine is a verdict the
