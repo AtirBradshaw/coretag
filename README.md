@@ -93,6 +93,14 @@ The load test stops itself if the GPU reaches 93 °C or its hardware protection 
   goal is making forgery harder than honesty and detectable afterwards, and every report's raw data is
   public at `/api/v1/report/{id}` for anyone to audit.
 
+## How it was built
+
+I designed Coretag and built it with a lot of help from AI coding tools (Claude) for debugging and learning how to add features.
+The product decisions are mine. I've tested it on my own
+RTX 3060, and it has 74 automated tests, including forged and tampered data.
+
+If something looks wrong, open an issue. I'd rather know.
+
 ## Licence
 
 Source-available, **not** open source. You may read and audit the code. See `LICENSE.txt`.
